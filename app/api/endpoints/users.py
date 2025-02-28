@@ -1,11 +1,16 @@
 from typing import Annotated
+
+import sqlalchemy
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
+from starlette import status
+
 from app.api.schemas.user import UserRegistration
 from app.core.security import create_jwt_token, hashed_password, pwd_context
 from app.db.database import get_db
 from sqlalchemy.orm import Session
 from app.db.models import Users
+from app.kafka.email_producer import send_email_to_kafka
 
 users_router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -14,9 +19,16 @@ users_router = APIRouter(prefix="/auth", tags=["auth"])
 async def register(data: UserRegistration, session: Session = Depends(get_db)):
     if data:
         password = hashed_password(data.password)
-        session.add(Users(email=data.email, name=data.name, password=password))
-        session.commit()
-        return {"added data": data}
+        try:
+            session.add(Users(email=data.email, name=data.name, password=password))
+            # send_email_to_kafka(data.email)
+            if True:
+                session.commit()
+                return {"added data": data}
+            return {"message": "Email not sent"}
+        except sqlalchemy.exc.IntegrityError as e:
+            return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.detail)
+
 
 
 @users_router.post("/login")

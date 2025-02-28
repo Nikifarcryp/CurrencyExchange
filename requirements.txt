@@ -11,3 +11,5 @@ uvicorn~=0.34.0
 psycopg2
 pydantic[email]
 python-multipart
+kafka~=1.3.5
+pytest~=8.3.4

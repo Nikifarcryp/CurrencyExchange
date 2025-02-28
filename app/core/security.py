@@ -16,14 +16,17 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 load_dotenv()
 oath2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
+
 def create_jwt_token(data: dict, expires_delta: Optional[int] = None):
     expire = datetime.utcnow() + timedelta(minutes=expires_delta if expires_delta else ACCESS_TOKEN_EXPIRE_MINUTES)
     data.update({"exp": expire})
     return jwt.encode(data, os.getenv("SECRET_KEY"), algorithm=os.getenv("ALGORITHM"))
 
+
 def decode_jwt_token(token: str):
     payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=[os.getenv("ALGORITHM")])
     return payload
+
 
 def get_current_user(token: str = Depends(oath2_scheme)):
     credentials_exception = HTTPException(
