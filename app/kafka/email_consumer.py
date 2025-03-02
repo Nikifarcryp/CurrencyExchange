@@ -34,9 +34,6 @@ def build_and_send_email(gmail_user_to, name):
         print(f"Error: {e}")
 
 
-
-
-
 def consume_emails():
     print("🔄 Waiting for messages from Kafka ...")
     while True:
@@ -45,7 +42,7 @@ def consume_emails():
             try:
                 for _, batch in records.items():
                     for record in batch:
-                        print(f"📩 Recieved message: {record.value}")
+                        print(f"📩 Received message: {record.value}")
                         build_and_send_email(record.value['email'], record.value['name'])
             except Exception as e:
                 print(f"❌ Processing error: {e}")

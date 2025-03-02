@@ -6,3 +6,4 @@ client = TestClient(app)
 
 def test_registration():
     response = client.get('auth/registration/', params=[hashed_password('Nik_234rftg5g')])
+
