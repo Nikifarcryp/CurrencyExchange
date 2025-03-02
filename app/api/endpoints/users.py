@@ -21,8 +21,7 @@ async def register(data: UserRegistration, session: Session = Depends(get_db)):
         password = hashed_password(data.password)
         try:
             session.add(Users(email=data.email, name=data.name, password=password))
-            # send_email_to_kafka(data.email)
-            if True:
+            if send_email_to_kafka(data.email, data.name):
                 session.commit()
                 return {"added data": data}
             return {"message": "Email not sent"}
