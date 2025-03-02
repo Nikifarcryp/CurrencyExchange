@@ -11,6 +11,7 @@ class UserBase(BaseModel):
             raise ValueError('Password must be at least 8 characters long')
         return value
 
+
 class UserRegistration(UserBase):
     name: str
 

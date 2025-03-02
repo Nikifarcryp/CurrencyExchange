@@ -13,3 +13,7 @@ pydantic[email]
 python-multipart
 kafka~=1.3.5
 pytest~=8.3.4
+asyncpg
+greenlet
+httpx~=0.28.1
+aiokafka~=0.12.0

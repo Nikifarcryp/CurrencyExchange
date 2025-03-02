@@ -1,4 +1,5 @@
-from kafka import KafkaConsumer
+import asyncio
+from aiokafka import AIOKafkaConsumer
 import json
 from dotenv import load_dotenv
 import smtplib
@@ -10,10 +11,6 @@ load_dotenv()
 
 gmail_user_from = os.getenv("GMAIL_LOGIN")
 gmail_password_from = os.getenv("GMAIL_PASSWORD")
-
-consumer = KafkaConsumer('emails',
-                         bootstrap_servers='localhost:9092',
-                         value_deserializer=lambda x: json.loads(x.decode('utf-8')))
 
 
 def build_and_send_email(gmail_user_to, name):
@@ -34,18 +31,19 @@ def build_and_send_email(gmail_user_to, name):
         print(f"Error: {e}")
 
 
-def consume_emails():
+async def consume_emails():
+    consumer = AIOKafkaConsumer('emails',
+                                bootstrap_servers='localhost:9092',
+                                value_deserializer=lambda x: json.loads(x.decode('utf-8')))
+    await consumer.start()
     print("🔄 Waiting for messages from Kafka ...")
     while True:
-        records = consumer.poll(timeout_ms=1000)
-        if records:
-            try:
-                for _, batch in records.items():
-                    for record in batch:
-                        print(f"📩 Received message: {record.value}")
-                        build_and_send_email(record.value['email'], record.value['name'])
-            except Exception as e:
-                print(f"❌ Processing error: {e}")
+        try:
+            async for record in consumer:
+                print(f"📩 Received message: {record.value}")
+                build_and_send_email(record.value['email'], record.value['name'])
+        except Exception as e:
+            print(f"❌ Processing error: {e}")
 
 
-consume_emails()
+asyncio.run(consume_emails())
