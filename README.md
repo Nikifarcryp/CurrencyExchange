@@ -29,6 +29,8 @@ API_APILAYER=4983jrcv4gk9ceugjhtirfod
 GMAIL_LOGIN=name@gmail.com
 GMAIL_PASSWORD=xwebbzmiavlqapzz
 
+Step 6: Configure your PostgreSQL and don't forget to run database.
+
 Step 6: Run command (after docker installation)
 docker compose -f docker-compose.yml up
 Do this for appropriate work of Kafka
@@ -36,7 +38,6 @@ Do this for appropriate work of Kafka
 Step 7: Run Kafka Consumer
 Open new terminal in parallel with a terminal where app is launched
 Run command (being in route project repository): python3 app/kafka/email_consumer.py
-
 
 
 Step 6: Run the Application
